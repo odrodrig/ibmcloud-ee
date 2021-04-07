@@ -22,8 +22,14 @@ COPY --from=galaxy /usr/share/ansible /usr/share/ansible
 COPY --from=builder /output/ /output/
 RUN yum install -y yum-utils && \
     yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo && \
-    yum -y install terraform
+    yum -y install terraform 
 
+RUN curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+RUN curl -L -O https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz && \
+  tar -xvf oc.tar.gz && \
+  mv oc /usr/local/bin && \
+  rm oc.tar.gz
+  
 RUN /output/install-from-bindep && rm -rf /output/wheels
 RUN alternatives --set python /usr/bin/python3
 COPY --from=quay.io/project-receptor/receptor:0.9.6 /usr/bin/receptor /usr/bin/receptor
